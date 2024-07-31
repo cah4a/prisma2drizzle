@@ -1,0 +1,37 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id() @default(autoincrement())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    Post[]
+  reviewer  Post[]   @relation(name: "Reviewer")
+
+  @@index([name, email])
+}
+
+model Post {
+  id         Int      @id() @default(autoincrement())
+  authorId   Int
+  author     User     @relation(fields: [authorId], references: [id])
+  reviewerId Int?
+  reviewer   User?    @relation("Reviewer", fields: [reviewerId], references: [id])
+  name       String
+  slug       String   @unique
+  tags       Tag[]
+  text       String?  @db.MediumText
+  isActive   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Tag {
+  id    Int    @id() @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}

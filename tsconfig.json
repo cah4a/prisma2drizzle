@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "noEmit": true,
+        "target": "ES2021",
+        "lib": ["ES2021"],
+        "module": "ES2022",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+      "allowSyntheticDefaultImports": true
+    }
+}
