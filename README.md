@@ -2,30 +2,34 @@
 
 ## Features
 
-- Generates a Drizzle schema from a Prisma schema file
-- Generates Drizzle relations (one-to-one, one-to-many, many-to-one, many-to-many)
-- Supports disambiguation relations
+-   Generates a Drizzle schema from a Prisma schema file
+-   Generates Drizzle relations (one-to-one, one-to-many, many-to-one, many-to-many)
+-   Supports disambiguation relations
 
 ## Supported Databases Dialects
 
-- MySQL
-- PostgreSQL (TBD)
-- SQLite (TBD)
+-   MySQL
+-   PostgreSQL (TBD)
+-   SQLite (TBD)
 
 ## Usage
 
 Install the generator as a development dependency:
+
 ```bash
 npm install -D prisma-to-drizzle-generator
 ```
+
 ```bash
 yarn add -D prisma-to-drizzle-generator
 ```
+
 ```bash
 pnpm install -D prisma-to-drizzle-generator
 ```
 
 Add the generator to your Prisma schema:
+
 ```prisma
 generator drizzle {
   provider = "prisma-to-drizzle-generator"
@@ -34,10 +38,10 @@ generator drizzle {
 ```
 
 Run the generator:
+
 ```bash
 prisma generate
 ```
-
 
 ## Compat Mode
 

@@ -7,7 +7,7 @@ import {
     DrizzleSchema,
     DrizzleTable,
 } from "schema/drizzleSchema";
-import {isEmpty, snakeCase, uniq} from "lodash";
+import { isEmpty, snakeCase, uniq } from "lodash";
 
 const dialects = {
     mysql: {
@@ -37,9 +37,15 @@ const dialects = {
                     return { fn: "mediumint", arg: [`{ unsigned: true }`] };
                 case "BigInt":
                 case "BigInt @db.BigInt":
-                    return { fn: "bigint", arg: [`{ mode: "bigint", unsigned: false }`] };
+                    return {
+                        fn: "bigint",
+                        arg: [`{ mode: "bigint", unsigned: false }`],
+                    };
                 case "BigInt @db.UnsignedBigInt":
-                    return { fn: "bigint", arg: [`{ mode: "bigint", unsigned: true }`] };
+                    return {
+                        fn: "bigint",
+                        arg: [`{ mode: "bigint", unsigned: true }`],
+                    };
                 case "String @db.Text":
                     return { fn: "text" };
                 case "String @db.TinyText":
@@ -72,7 +78,7 @@ const dialects = {
                     return { fn: "binary", arg: [`{ length: 1 }`] };
                 case "DateTime":
                 case "DateTime @db.DateTime":
-                    return { fn: "datetime" };
+                    return { fn: "timestamp" };
                 case "DateTime @db.Timestamp":
                     return { fn: "timestamp" };
                 case "DateTime @db.Time":
@@ -145,9 +151,7 @@ class ImportsCollector {
     }
 }
 
-export function generateSchema(
-    schema: DrizzleSchema,
-) {
+export function generateSchema(schema: DrizzleSchema) {
     if (!schema.provider) {
         throw new Error("Provider is required");
     }
@@ -158,18 +162,29 @@ export function generateSchema(
 
     if (schema.provider in dialects) {
         for (const table of schema.tables) {
-            tables.push(generateTable(table, schema.enums, schema.provider as DialectType, imports));
+            tables.push(
+                generateTable(
+                    table,
+                    schema.enums,
+                    schema.provider as DialectType,
+                    imports,
+                ),
+            );
         }
 
         return imports.toString() + "\n\n" + tables.join("\n\n");
     }
 
     if (schema.provider === "postgres") {
-        throw new Error("Postgres is not supported yet. Please open an issue on GitHub if you need it.")
+        throw new Error(
+            "Postgres is not supported yet. Please open an issue on GitHub if you need it.",
+        );
     }
 
     if (schema.provider === "sqlite") {
-        throw new Error("SQLite is not supported yet. Please open an issue on GitHub if you need it.")
+        throw new Error(
+            "SQLite is not supported yet. Please open an issue on GitHub if you need it.",
+        );
     }
 
     throw new Error(`Unsupported dialect ${schema.provider}`);
@@ -320,9 +335,21 @@ function generateField(
     if (field.default) {
         if ("value" in field.default) {
             modifiers.push(`.default(${literal(field.default.value)})`);
+        } else if (field.default.fn === "now") {
+            modifiers.push(`.defaultNow()`);
         } else if (field.default.fn === "autoincrement") {
-            modifiers.push(`.${field.default.fn}()`);
+            modifiers.push(`.autoincrement()`);
+        } else if (field.default.fn === "uuid") {
+            modifiers.push(`.default("uuid()")`);
+        } else {
+            throw new Error(`Unknown default function ${field.default.fn}`);
         }
+    }
+
+    if (field.update?.fn === "now") {
+        modifiers.push(`.onUpdateNow()`);
+    } else if (field.update) {
+        throw new Error(`Unknown update function ${field.update.fn}`);
     }
 
     if (field.isPrimary) {

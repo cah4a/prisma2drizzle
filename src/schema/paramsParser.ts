@@ -1,4 +1,10 @@
-import {AttributeArgument, RelationArray, Value, Func, KeyValue} from "@mrleebo/prisma-ast";
+import {
+    AttributeArgument,
+    RelationArray,
+    Value,
+    Func,
+    KeyValue,
+} from "@mrleebo/prisma-ast";
 import { entries, isArray, isBoolean, isNumber, isString } from "lodash";
 
 type TypeParse<T = unknown> = (value: Value) => T;
@@ -18,12 +24,14 @@ type OneOfTypes<T extends Record<string, TypeParse>> = {
 }[keyof T];
 
 type ParamsParser<T extends Signature> = {
-    [key in keyof T]: ReturnType<T[key]["type"]> | (T[key]["required"] extends true ? never : undefined);
-}
+    [key in keyof T]:
+        | ReturnType<T[key]["type"]>
+        | (T[key]["required"] extends true ? never : undefined);
+};
 
 export function paramsParser<T extends Signature>(signature: T) {
     return (values?: (AttributeArgument | Value)[]): ParamsParser<T> => {
-        const result : Record<string, unknown> = {};
+        const result: Record<string, unknown> = {};
         const positional = [] as Value[];
 
         for (const attr of values ?? []) {
@@ -48,7 +56,7 @@ export function paramsParser<T extends Signature>(signature: T) {
             }
         }
 
-        const following  = entries(signature).filter(
+        const following = entries(signature).filter(
             ([name]) => !(name in result),
         );
 
@@ -59,7 +67,7 @@ export function paramsParser<T extends Signature>(signature: T) {
                 throw new Error(`Too many arguments`);
             }
 
-            const [name, {type}] = item;
+            const [name, { type }] = item;
 
             try {
                 result[name] = type(value);
@@ -69,7 +77,7 @@ export function paramsParser<T extends Signature>(signature: T) {
         }
 
         const requiredParams = following
-            .filter(([, {required}]) => required)
+            .filter(([, { required }]) => required)
             .map(([name]) => name);
 
         if (requiredParams.length) {
@@ -143,7 +151,7 @@ export const type = {
     },
 
     either<T extends string[]>(...variants: T) {
-        return (value: Value) : T[number] => {
+        return (value: Value): T[number] => {
             if (isString(value)) {
                 if (variants.includes(value)) {
                     return value;
@@ -153,7 +161,7 @@ export const type = {
             }
 
             throw new Error(`Expected one of ${variants.join(", ")}`);
-        }
+        };
     },
 
     fn(value: Value) {
@@ -221,7 +229,10 @@ function isKeyValue(arg?: KeyValue | Value | Func): arg is KeyValue {
 
 function isArrayType(arg?: KeyValue | Value | Func): arg is RelationArray {
     return !!(
-        arg && typeof arg === "object" && "type" in arg && arg.type === "array"
+        arg &&
+        typeof arg === "object" &&
+        "type" in arg &&
+        arg.type === "array"
     );
 }
 

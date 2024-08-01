@@ -3,7 +3,7 @@ import {
     index,
     int,
     varchar,
-    datetime,
+    timestamp,
     mediumtext,
     boolean,
     primaryKey,
@@ -20,8 +20,8 @@ export const User = mysqlTable(
         id: int("id").autoincrement().primaryKey().notNull(),
         email: varchar("email", { length: 255 }).unique().notNull(),
         name: varchar("name", { length: 255 }).notNull(),
-        createdAt: datetime("createdAt").notNull(),
-        updatedAt: datetime("updatedAt").notNull(),
+        createdAt: timestamp("createdAt").defaultNow().notNull(),
+        updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
     },
     (table) => ({
         nameEmailIdx: index("name_email_idx").on(table.name, table.email),
@@ -45,10 +45,11 @@ export const Post = mysqlTable("Post", {
     reviewerId: int("reviewerId").references(() => User.id),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).unique().notNull(),
+    uuid: varchar("uuid", { length: 255 }).default("uuid()").notNull(),
     text: mediumtext("text"),
     isActive: boolean("isActive").default(false).notNull(),
-    createdAt: datetime("createdAt").notNull(),
-    updatedAt: datetime("updatedAt").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
 export type PostSelectModel = InferSelectModel<typeof Post>;

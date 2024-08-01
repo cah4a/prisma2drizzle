@@ -23,6 +23,7 @@ model Post {
   reviewer   User?    @relation("Reviewer", fields: [reviewerId], references: [id])
   name       String
   slug       String   @unique
+  uuid       String   @default(uuid())
   tags       Tag[]
   text       String?  @db.MediumText
   isActive   Boolean  @default(false)

@@ -1,4 +1,9 @@
-export type RelationAction = "Cascade" | "Restrict" | "NoAction" | "SetNull" | "SetDefault";
+export type RelationAction =
+    | "Cascade"
+    | "Restrict"
+    | "NoAction"
+    | "SetNull"
+    | "SetDefault";
 
 export type DrizzleDialect = "sqlite" | "mysql" | "postgres";
 
@@ -6,7 +11,7 @@ export type DrizzleSchema = {
     tables: DrizzleTable[];
     enums: DrizzleEnum[];
     provider: string | null;
-}
+};
 
 export type DrizzleTable = {
     name: string;
@@ -15,21 +20,23 @@ export type DrizzleTable = {
     indexes: DrizzleIndex[];
     foreignKeys: DrizzleForeignKey[];
     relations: DrizzleRelation[];
-}
+};
 
-export type DrizzleRelation = {
-    name: string;
-    alias?: string;
-    kind: "foreign";
-    to: string;
-    fields: string[];
-    references: string[];
-} | {
-    name: string;
-    alias?: string;
-    kind: "many" | "one";
-    to: string;
-}
+export type DrizzleRelation =
+    | {
+          name: string;
+          alias?: string;
+          kind: "foreign";
+          to: string;
+          fields: string[];
+          references: string[];
+      }
+    | {
+          name: string;
+          alias?: string;
+          kind: "many" | "one";
+          to: string;
+      };
 
 export type DrizzleField = {
     isArray?: boolean;
@@ -41,9 +48,18 @@ export type DrizzleField = {
     isNullable: boolean;
     default?:
         | { value: number | string | boolean | bigint | null }
-        | { fn: "autoincrement" | "now" | "uuid" | "guid" | "cuid" | "cuid2" | string };
+        | {
+              fn:
+                  | "autoincrement"
+                  | "now"
+                  | "uuid"
+                  | "guid"
+                  | "cuid"
+                  | "cuid2"
+                  | string;
+          };
     update?: { fn: "now" };
-    isUnique?: { name?: string, sort: "Asc" | "Desc" };
+    isUnique?: { name?: string; sort: "Asc" | "Desc" };
 };
 
 export type DrizzleForeignKey = {
@@ -54,13 +70,13 @@ export type DrizzleForeignKey = {
     toFields: string[];
     onDelete?: RelationAction;
     onUpdate?: RelationAction;
-}
+};
 
 export type DrizzleIndex = {
-    name: string,
+    name: string;
     dbName?: string;
     kind: "primary" | "unique" | "index";
-    fields: { name: string; sort:  "Asc" | "Desc" }[];
+    fields: { name: string; sort: "Asc" | "Desc" }[];
 };
 
 export type DrizzleEnum = {

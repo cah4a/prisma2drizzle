@@ -49,8 +49,10 @@ const cli = meow(
 
 async function findSchemaFile() {
     if (cli.flags.schema) {
-        if (!await hasFile(cli.flags.schema)) {
-            console.error(chalk.bgRed(`Schema file ${cli.flags.schema} not exists`));
+        if (!(await hasFile(cli.flags.schema))) {
+            console.error(
+                chalk.bgRed(`Schema file ${cli.flags.schema} not exists`),
+            );
             process.exit(1);
         }
 

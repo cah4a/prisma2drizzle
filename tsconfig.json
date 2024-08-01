@@ -9,6 +9,6 @@
         "noImplicitAny": true,
         "strictNullChecks": true,
         "noUnusedLocals": true,
-      "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true
     }
 }

@@ -7,7 +7,6 @@ import {
     Enum,
 } from "@mrleebo/prisma-ast";
 import {
-    DrizzleDialect,
     DrizzleEnum,
     DrizzleField,
     DrizzleForeignKey,
@@ -111,7 +110,7 @@ export function getDrizzleSchema(schema: Schema): DrizzleSchema {
     const result: DrizzleSchema = {
         tables: [],
         enums: [],
-        provider : getProvider(schema),
+        provider: getProvider(schema),
     };
 
     const models = new Map<string, Model>(
@@ -137,7 +136,9 @@ export function getDrizzleSchema(schema: Schema): DrizzleSchema {
         }
     }
 
-    for (const pivot of Object.values(keyBy(Object.values(pivotTables), 'joint'))) {
+    for (const pivot of Object.values(
+        keyBy(Object.values(pivotTables), "joint"),
+    )) {
         const from = find(
             result.tables.find((t) => t.name === pivot.from)?.fields,
             { isPrimary: true },
@@ -183,7 +184,7 @@ export function getDrizzleSchema(schema: Schema): DrizzleSchema {
                         { name: pivot.fromKey, sort: "Asc" },
                         { name: pivot.toKey, sort: "Asc" },
                     ],
-                }
+                },
             ],
             foreignKeys: [
                 {
@@ -197,12 +198,14 @@ export function getDrizzleSchema(schema: Schema): DrizzleSchema {
                     fromFields: [pivot.toKey],
                     toFields: [to.name],
                     to: pivot.to,
-                }
+                },
             ],
             relations: [
                 {
                     name: pivot.from,
-                    alias: pivot.alias ? `${pivot.alias}_${pivot.fromKey}` : undefined,
+                    alias: pivot.alias
+                        ? `${pivot.alias}_${pivot.fromKey}`
+                        : undefined,
                     kind: "foreign",
                     to: pivot.from,
                     fields: [pivot.fromKey],
@@ -210,14 +213,16 @@ export function getDrizzleSchema(schema: Schema): DrizzleSchema {
                 },
                 {
                     name: pivot.to,
-                    alias: pivot.alias ? `${pivot.alias}_${pivot.toKey}` : undefined,
+                    alias: pivot.alias
+                        ? `${pivot.alias}_${pivot.toKey}`
+                        : undefined,
                     kind: "foreign",
                     to: pivot.to,
                     fields: [pivot.toKey],
                     references: [to.name],
-                }
-            ]
-        })
+                },
+            ],
+        });
     }
 
     return result;
@@ -292,7 +297,9 @@ function table(
                 if (pivot) {
                     result.relations.push({
                         kind: "many",
-                        alias: pivot.alias ? `${pivot.alias}_${pivot.fromKey}` : undefined,
+                        alias: pivot.alias
+                            ? `${pivot.alias}_${pivot.fromKey}`
+                            : undefined,
                         name: property.name,
                         to: exportName(pivot.joint),
                     });
@@ -304,7 +311,9 @@ function table(
                         );
                     }
 
-                    const params = rel ? relationAttribute(rel.args) : undefined;
+                    const params = rel
+                        ? relationAttribute(rel.args)
+                        : undefined;
 
                     result.relations.push({
                         alias: params?.map ?? params?.name,
@@ -549,16 +558,19 @@ function collectPivotTables(models: Map<string, Model>) {
 
             const refFields = refModel.properties.filter(
                 (p): p is Field =>
-                    p.type === "field" && p.fieldType === model.name && !!p.array,
+                    p.type === "field" &&
+                    p.fieldType === model.name &&
+                    !!p.array,
             );
 
             if (!refFields.length) {
                 continue;
             }
 
-            const reversed = model.name.length === refModel.name.length
-                ? model.name < refModel.name
-                : model.name.length < refModel.name.length;
+            const reversed =
+                model.name.length === refModel.name.length
+                    ? model.name < refModel.name
+                    : model.name.length < refModel.name.length;
 
             const from = reversed ? model.name : refModel.name;
             const to = reversed ? refModel.name : model.name;
@@ -579,14 +591,17 @@ function collectPivotTables(models: Map<string, Model>) {
     return relations;
 }
 
-function getProvider(schema: Schema)  {
+function getProvider(schema: Schema) {
     for (const item of schema.list) {
         if (item.type !== "datasource") {
             continue;
         }
 
         for (const assignment of item.assignments) {
-            if (assignment.type === "assignment" && assignment.key === "provider") {
+            if (
+                assignment.type === "assignment" &&
+                assignment.key === "provider"
+            ) {
                 return type.string(assignment.value);
             }
         }

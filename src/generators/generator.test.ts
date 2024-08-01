@@ -212,7 +212,10 @@ describe("generator", () => {
                         dbName: "user_id_unique",
                         name: "userIdUnique",
                         kind: "unique",
-                        fields: [{ name: "id", sort: "Asc" }, { name: "userId", sort: "Desc" }],
+                        fields: [
+                            { name: "id", sort: "Asc" },
+                            { name: "userId", sort: "Desc" },
+                        ],
                     },
                 ],
                 foreignKeys: [],
