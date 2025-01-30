@@ -567,11 +567,7 @@ function collectPivotTables(models: Map<string, Model>) {
                 continue;
             }
 
-            const reversed =
-                model.name.length === refModel.name.length
-                    ? model.name < refModel.name
-                    : model.name.length < refModel.name.length;
-
+            const reversed = model.name < refModel.name;
             const from = reversed ? model.name : refModel.name;
             const to = reversed ? refModel.name : model.name;
 
